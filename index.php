@@ -12,7 +12,7 @@ if (isset($_GET['page']) && is_numeric($_GET['page'])) {
     $page = 1;
 }
 // db
-$keyWord = isset($_REQUEST['keyWord']) ? $_REQUEST['keyWord'] : null;
+$keyWord = isset($_REQUEST['keyWord']) ? trim($_REQUEST['keyWord']) : null;
 if ($keyWord) {
     $totalNum = $dbConn->fetchColumn("SELECT COUNT(*) FROM jkf WHERE content like '%{$keyWord}%'");
 } else {
@@ -36,10 +36,8 @@ if ($keyWord) {
 }
 $offsetStart = $perNum * $page - $perNum;
 $sql .= " order by id limit {$offsetStart},{$perNum}";
-// print_r($sql);
+
 $res = $dbConn->fetchRowMany($sql);
-// var_dump($res);
-// exit;
 
 // ===========html=============
 include 'header.html';
