@@ -29,6 +29,9 @@ conn = connectDb()
 
 if conn is not None:
     cursor = conn.cursor()
+else:
+    print('資料庫連線失敗')
+    exit(0)
     
 # 開始蒐一個月內?頁
 if 'main1' in sys.argv:

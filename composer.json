@@ -1,0 +1,7 @@
+{
+    "require": {
+        "jasongrimes/paginator": "~1.0",
+        "php-pagination/php-pagination": "^2.0",
+        "simplon/mysql": "^2.2"
+    }
+}
