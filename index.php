@@ -89,6 +89,9 @@ include 'header.html';
                 <?php }?>
             </tbody>
         </table>
+        <br>
+        <span style="color:darkred">!!!!有打關鍵字不要按前後，只能按數字</span>
+        <br>
         <div class="row">
             <div class="col-md-10">
                 <nav aria-label="Page navigation">
