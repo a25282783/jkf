@@ -85,7 +85,7 @@ include 'header.html';
                     <tr>
                     <th scope="row"><?php echo $v['id'] ?></th>
                     <td><?php echo $v['title'] ?></td>
-                    <td><a href="<?php echo $v['url'] ?>"><?php echo $v['url'] ?></a></td>
+                    <td><a href="<?php echo $v['url'] ?>" target="_blank"><?php echo $v['url'] ?></a></td>
                     <td><?php echo $v['content'] ?></td>
                     </tr>
                 <?php }?>
