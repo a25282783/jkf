@@ -4,10 +4,11 @@ CREATE TABLE `jkf` (
   `url` varchar(255) DEFAULT NULL,
   `title` varchar(255) DEFAULT NULL,
   `content` text DEFAULT NULL,
+  `avatar` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `url` (`url`)
+  UNIQUE KEY `url` (`url`),
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4  
 
 >cd dir  
->python jkf.py [main1] [main2]
+>python(version<3.9) PY(version>=3.9) jkf.py [main1] [main2]
 

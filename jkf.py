@@ -36,19 +36,22 @@ else:
 # 開始蒐一個月內?頁
 if 'main1' in sys.argv:
     print('爬網址開始...')
-    for i in range(10):
+    for i in range(1):
         page = i+1
-        url = "https://www.jkforum.net/type-1128-1948.html?forumdisplay&typeid=1948&orderby=dateline&dateline=2592000&filter=dateline&typeid=1948&forumdisplay=&orderby=dateline&dateline=2592000&page=%d" % (page)
-
+        url = "https://www.jkforum.net/type-1128-1476.html?forumdisplay&typeid=1476&orderby=dateline&dateline=2592000&filter=dateline&typeid=1476&forumdisplay=&orderby=dateline&dateline=2592000&page=%d" % (page)
         resp = requests.get(url)
         if(resp.status_code == 200):
             resp.encoding = 'utf-8'    #轉換編碼至UTF-8
             soup = BeautifulSoup(resp.content, 'html.parser')
             columns = soup.find_all('a',href=re.compile("thread-"))
-            sql = 'INSERT INTO `jkf` (`url`) VALUES (%s) ON DUPLICATE KEY UPDATE url=VALUES(url)'
+            sql = 'INSERT INTO `jkf` (`url`,`avatar`) VALUES (%s,%s) ON DUPLICATE KEY UPDATE url=VALUES(url),avatar=VALUES(avatar)'
             args = []
             for i in columns:
-                args.append(('https://www.jkforum.net/'+i['href']))
+                # href
+                href = 'https://www.jkforum.net/'+i['href']
+                #avatar
+                avatar = i.find('img',recursive=False)['src']
+                args.append((href,avatar))
             # 批量插入
             try:
                 cursor.executemany(sql,args)
@@ -62,6 +65,10 @@ if 'main1' in sys.argv:
             print('第%d頁狀態碼錯誤' % (page))
             continue
     print('你這個小淫蟲~~')
+    # 重整id
+    cursor.execute("SET @newid=0")
+    cursor.execute("UPDATE jkf SET id = (SELECT @newid:=@newid+ 1)")
+    conn.commit()
 
 # 爬文章
 if 'main2' in sys.argv:
@@ -94,6 +101,9 @@ if 'main2' in sys.argv:
 if 'sandbox' in sys.argv:
     # test something...
     print('測試開始')
+    cursor.execute("SET @newid=0")
+    cursor.execute("UPDATE jkf SET id = (SELECT @newid:=@newid+ 1)")
+    conn.commit()
 
 
 
