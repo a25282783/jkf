@@ -34,9 +34,9 @@ else:
     exit(0)
     
 # 開始蒐一個月內?頁
-if 'main1' in sys.argv:
+if 'main1' in sys.argv or len(sys.argv)==1:
     print('爬網址開始...')
-    for i in range(30):
+    for i in range(10):
         page = i+1
         url = "https://www.jkforum.net/type-1128-1476.html?forumdisplay&typeid=1476&orderby=dateline&dateline=2592000&filter=dateline&typeid=1476&forumdisplay=&orderby=dateline&dateline=2592000&page=%d" % (page)
         resp = requests.get(url)
@@ -71,7 +71,7 @@ if 'main1' in sys.argv:
     conn.commit()
 
 # 爬文章
-if 'main2' in sys.argv:
+if 'main2' in sys.argv or len(sys.argv)==1:
     print('爬內容開始...')
     cursor.execute("select `url` from jkf  order by id ")
     allRes = cursor.fetchall()
@@ -96,6 +96,7 @@ if 'main2' in sys.argv:
     cursor.executemany(sql,args)
     conn.commit()
     print('親，跑完了~~...')
+    input("隨便按鍵退出")
 
 # sandbox
 if 'sandbox' in sys.argv:
@@ -104,7 +105,6 @@ if 'sandbox' in sys.argv:
     cursor.execute("SET @newid=0")
     cursor.execute("UPDATE jkf SET id = (SELECT @newid:=@newid+ 1)")
     conn.commit()
-
 
 
 cursor.close()
