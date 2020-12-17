@@ -32,7 +32,12 @@ if conn is not None:
 else:
     print('資料庫連線失敗')
     exit(0)
-    
+
+# rebuild database
+cursor.execute("drop table if exists jkf;")
+cursor.execute("CREATE TABLE jkf ( id int(10) unsigned NOT NULL AUTO_INCREMENT, url varchar(255) DEFAULT NULL, title varchar(255) DEFAULT NULL, content text DEFAULT NULL, avatar varchar(255) DEFAULT NULL, PRIMARY KEY (id), UNIQUE KEY url (url) ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4")
+conn.commit()
+
 # 開始蒐一個月內?頁
 if 'main1' in sys.argv or len(sys.argv)==1:
     print('爬網址開始...')
