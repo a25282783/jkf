@@ -5,7 +5,12 @@ from bs4 import BeautifulSoup
 import re
 import pymysql
 import sys
+import subprocess
 
+# git pull 
+output = subprocess.check_output(["git", "pull"])
+exit(0)
+# db setting
 db_settings = {
     "host": "127.0.0.1",
     "port": 3306,
