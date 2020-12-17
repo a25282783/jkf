@@ -10,5 +10,14 @@ CREATE TABLE `jkf` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4  
 
 >cd dir  
->python(version<3.9) PY(version>=3.9) jkf.py [main1] [main2]
+>python(version<3.9) PY(version>=3.9) jkf.py [main1] [main2]  
+>安裝:  
+>>xampp  
+>>composer  
+>>git  
+>>python  
+>>>pymysql  
+>>>requests  
+>>>beautifulsoup4  
+
 
