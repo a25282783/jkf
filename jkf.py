@@ -5,10 +5,6 @@ from bs4 import BeautifulSoup
 import re
 import pymysql
 import sys
-import subprocess
-
-# git pull 
-output = subprocess.check_output(["git", "pull"])
 
 # db setting
 db_settings = {
