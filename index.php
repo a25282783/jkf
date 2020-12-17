@@ -11,12 +11,26 @@ if (isset($_GET['page']) && is_numeric($_GET['page'])) {
 } else {
     $page = 1;
 }
-// db
+// count
 $keyWord = isset($_REQUEST['keyWord']) ? trim($_REQUEST['keyWord']) : null;
-if ($keyWord) {
-    $totalNum = $dbConn->fetchColumn("SELECT COUNT(*) FROM jkf WHERE content like '%{$keyWord}%'");
-} else {
-    $totalNum = $dbConn->fetchColumn("SELECT COUNT(*) FROM jkf");
+$remove = isset($_REQUEST['remove']) ? trim($_REQUEST['remove']) : null;
+$countSql = "SELECT COUNT(*) FROM jkf ";
+if ($remove || $keyWord) {
+    $countSql .= ' WHERE ';
+    $query = '';
+    if ($keyWord) {
+        $query .= "content like '%$keyWord%' AND ";
+    }
+    if ($remove) {
+        $query .= "content not like '%$remove%' AND ";
+    }
+    $query = rtrim($query, " AND ");
+    $countSql .= $query;
+}
+
+$totalNum = $dbConn->fetchColumn($countSql);
+if (!$totalNum) {
+    exit('沒有資料!');
 }
 
 //use pagination class with results, per page and page
@@ -29,10 +43,19 @@ $iterator = $indexes->getIterator();
 $all = $pagination->getAllIndexesOfPages();
 $iteratorAll = $all->getIterator();
 
-// input
+// page
 $sql = "SELECT * FROM jkf ";
-if ($keyWord) {
-    $sql .= "WHERE content like '%{$keyWord}%'";
+if ($remove || $keyWord) {
+    $sql .= ' WHERE ';
+    $query = '';
+    if ($keyWord) {
+        $query .= "content like '%$keyWord%' AND ";
+    }
+    if ($remove) {
+        $query .= "content not like '%$remove%' AND ";
+    }
+    $query = rtrim($query, " AND ");
+    $sql .= $query;
 }
 $offsetStart = $perNum * $page - $perNum;
 $sql .= " order by id limit {$offsetStart},{$perNum}";
@@ -55,8 +78,12 @@ include 'header.html';
 </div>
 <form action="/" method="post">
   <div class="form-group">
-    <label for="exampleInputPassword1">關鍵字</label>
-    <input type="text" class="form-control" id="exampleInputPassword1" placeholder="吹...刪除可全搜" name="keyWord" value="<?php if ($keyWord) {echo $keyWord;}?>">
+    <label for="keyWord">關鍵字</label>
+    <input type="text" class="form-control" id="keyWord" placeholder="吹...刪除可全搜" name="keyWord" value="<?php if ($keyWord) {echo $keyWord;}?>">
+  </div>
+  <div class="form-group">
+    <label for="remove">排除</label>
+    <input type="text" class="form-control" id="remove" placeholder="西門彤彤..." name="remove" value="<?php if ($remove) {echo $remove;}?>">
   </div>
   <button type="submit" class="btn btn-primary">提交</button>
 </form>
@@ -73,6 +100,7 @@ include 'header.html';
             <thead >
                 <tr>
                 <th scope="col">id</th>
+                <th scope="col">頭像</th>
                 <th scope="col">標題</th>
                 <th scope="col">連結</th>
                 <th scope="col">內文</th>
@@ -82,6 +110,7 @@ include 'header.html';
                 <?php foreach ($res as $v) {?>
                     <tr>
                     <th scope="row"><?php echo $v['id'] ?></th>
+                    <td><img src="<?php echo $v['avatar'] ?>"></td>
                     <td><?php echo $v['title'] ?></td>
                     <td><a href="<?php echo $v['url'] ?>" target="_blank"><?php echo $v['url'] ?></a></td>
                     <td><?php echo $v['content'] ?></td>
@@ -108,7 +137,7 @@ include 'header.html';
                         </li>
                         <?php while ($iterator->valid()): ?>
                             <li>
-                                <a href="?page=<?php echo $iterator->current() ?>&keyWord=<?php if ($keyWord) {echo $keyWord;}?>" class="xxx">
+                                <a href="?page=<?php echo $iterator->current() ?>&keyWord=<?php if ($keyWord) {echo $keyWord;}?>&remove=<?php if ($remove) {echo $remove;}?>" class="xxx">
                                     <?php echo $iterator->current() ?>
                                 </a>
                             </li>

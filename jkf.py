@@ -36,7 +36,7 @@ else:
 # 開始蒐一個月內?頁
 if 'main1' in sys.argv:
     print('爬網址開始...')
-    for i in range(1):
+    for i in range(30):
         page = i+1
         url = "https://www.jkforum.net/type-1128-1476.html?forumdisplay&typeid=1476&orderby=dateline&dateline=2592000&filter=dateline&typeid=1476&forumdisplay=&orderby=dateline&dateline=2592000&page=%d" % (page)
         resp = requests.get(url)
