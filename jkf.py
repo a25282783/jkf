@@ -9,8 +9,7 @@ import subprocess
 
 # git pull 
 output = subprocess.check_output(["git", "pull"])
-exit(0)
-#test
+
 # db setting
 db_settings = {
     "host": "127.0.0.1",
