@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import re
 import pymysql
 import sys
+import json
 
 # db setting
 db_settings = {
@@ -34,15 +35,14 @@ else:
     print('資料庫連線失敗')
     exit(0)
 
-# rebuild database
-cursor.execute("drop table if exists jkf;")
-cursor.execute("CREATE TABLE jkf ( id int(10) unsigned NOT NULL AUTO_INCREMENT, url varchar(255) DEFAULT NULL, title varchar(255) DEFAULT NULL, content text DEFAULT NULL, avatar varchar(255) DEFAULT NULL, PRIMARY KEY (id), UNIQUE KEY url (url) ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4")
-conn.commit()
-
 # 開始蒐一個月內?頁
 if 'main1' in sys.argv or len(sys.argv)==1:
     print('爬網址開始...')
-    for i in range(10):
+    # rebuild database
+    cursor.execute("drop table if exists jkf;")
+    cursor.execute("CREATE TABLE jkf ( id int(10) unsigned NOT NULL AUTO_INCREMENT, url varchar(255) DEFAULT NULL, title varchar(255) DEFAULT NULL, content text DEFAULT NULL, avatar varchar(255) DEFAULT NULL, PRIMARY KEY (id), UNIQUE KEY url (url) ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4")
+    conn.commit()
+    for i in range(1):
         page = i+1
         url = "https://www.jkforum.net/type-1128-1476.html?forumdisplay&typeid=1476&orderby=dateline&dateline=2592000&filter=dateline&typeid=1476&forumdisplay=&orderby=dateline&dateline=2592000&page=%d" % (page)
         resp = requests.get(url)
@@ -79,14 +79,16 @@ if 'main1' in sys.argv or len(sys.argv)==1:
 # 爬文章
 if 'main2' in sys.argv or len(sys.argv)==1:
     print('爬內容開始...')
-    cursor.execute("select `url` from jkf  order by id ")
+    cursor.execute("select `url`,`avatar` from jkf  order by id limit 10")
     allRes = cursor.fetchall()
     sql = 'INSERT INTO `jkf` (`url`,`title`,`content`) VALUES (%s,%s,%s) ON DUPLICATE KEY UPDATE url=VALUES(url),title=VALUES(title),content=VALUES(content)'
     args = []
+    json_data = []
     # print(allRes)
     # exit(0)
     for i in allRes:
         url = i[0]
+        avatar = i[1]
         resp = requests.get(url)
         if(resp.status_code == 200):
             soup = BeautifulSoup(resp.content, 'html.parser')
@@ -96,11 +98,21 @@ if 'main2' in sys.argv or len(sys.argv)==1:
                 content = soup.find_all('table',class_="view-data",limit=1)[0].get_text(strip=True)
                 args.append((url,title,content))
                 print("%s完成..." % (url))
+                #json
+                json_data.append({
+                    'url':url,
+                    'avatar':avatar,
+                    'title':title,
+                    'content':content
+                })
             except Exception:
                 # fail
                 continue
     cursor.executemany(sql,args)
     conn.commit()
+    #寫入json
+    with open('data.json', 'w') as outfile:
+        json.dump(json_data, outfile)
     print('親，跑完了~~...')
     input("隨便按鍵退出")
 
