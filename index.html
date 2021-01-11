@@ -109,6 +109,7 @@
                 </div>
             </div>
         </div>
+
         <div id='99999999'
         v-for="site in info"
       >
@@ -127,13 +128,30 @@
                 .then(
                     response => (
                         this.info = response.data,
-                        console.log(this.info)
-                    )
+                        (()=>{
+                            alert('aaaa')
+                        })()
+                    ),
+                    
                 )
                 .catch(function (error) {
                     console.log(error);
                 });
             },
+            methods:{
+                loadJson:function(){
+                    var id = 1
+                    this.info.forEach(object => {
+                        if(object.title.includes('line')||object.title.includes('Line')||object.title.includes('LINE')){
+                            return;
+                        }else{
+                            object.id = id;
+                            id++;
+                            localStorage.setItem(id,JSON.stringify(object))
+                        }
+                    });
+                },
+            }
         });
     </script>
 </body>
