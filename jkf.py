@@ -6,6 +6,7 @@ import re
 import pymysql
 import sys
 import json
+import math
 
 # db setting
 db_settings = {
@@ -79,13 +80,15 @@ if 'main1' in sys.argv or len(sys.argv)==1:
 # 爬文章
 if 'main2' in sys.argv or len(sys.argv)==1:
     print('爬內容開始...')
-    cursor.execute("select `url`,`avatar` from jkf  order by id limit 10")
+    cursor.execute("select `url`,`avatar` from jkf  order by id limit 11")
     allRes = cursor.fetchall()
     sql = 'INSERT INTO `jkf` (`url`,`title`,`content`) VALUES (%s,%s,%s) ON DUPLICATE KEY UPDATE url=VALUES(url),title=VALUES(title),content=VALUES(content)'
     args = []
-    json_data = []
+    json_data = {}
     # print(allRes)
     # exit(0)
+    j = 0 
+    show = 10
     for i in allRes:
         url = i[0]
         avatar = i[1]
@@ -99,12 +102,16 @@ if 'main2' in sys.argv or len(sys.argv)==1:
                 args.append((url,title,content))
                 print("%s完成..." % (url))
                 #json
-                json_data.append({
+                pageIndex = "page"+str(math.floor(j/show))
+                if(j%10 == 0):
+                    json_data[pageIndex] = []
+                json_data[pageIndex].append({
                     'url':url,
                     'avatar':avatar,
                     'title':title,
                     'content':content
                 })
+                j+=1
             except Exception:
                 # fail
                 continue
@@ -119,10 +126,8 @@ if 'main2' in sys.argv or len(sys.argv)==1:
 # sandbox
 if 'sandbox' in sys.argv:
     # test something...
-    print('測試開始')
-    cursor.execute("SET @newid=0")
-    cursor.execute("UPDATE jkf SET id = (SELECT @newid:=@newid+ 1)")
-    conn.commit()
+    j=20
+    print(j%10,math.floor(j/10),"page"+str(math.floor(j/10)))
 
 
 cursor.close()

@@ -21,8 +21,7 @@
                 <div class="page-header">
                     <h1>老司機最懂你
                         <!-- <small>現在第: <?php echo $page; ?>頁</small> -->
-                        <span class="label label-info"> 總共: <?php echo $pagination->getTotalOfPages(); ?>頁</span>
-                        <span class="label label-info"> 總共: <?php echo $totalNum; ?>筆</span>
+                        <span class="label label-info"> 總共:{{ totalpage }}頁</span>
                     </h1>
                 </div>
             </div>
@@ -47,32 +46,41 @@
                         <p><strong>結果:</strong></p>
                     </div>
                 </div>
+                <!-- table -->
                 <table class="table table-striped">
                     <thead >
                         <tr>
-                        <th scope="col">id</th>
                         <th scope="col">頭像</th>
-                        <th scope="col">標題</th>
                         <th scope="col">連結</th>
                         <th scope="col">內文</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($res as $v) {?>
-                            <tr>
-                            <th scope="row"><?php echo $v['id'] ?></th>
-                            <td><img src="<?php echo $v['avatar'] ?>"></td>
-                            <td><?php echo $v['title'] ?></td>
-                            <td><a href="<?php echo $v['url'] ?>" target="_blank"><?php echo $v['url'] ?></a></td>
-                            <td><?php echo $v['content'] ?></td>
-                            </tr>
-                        <?php }?>
+                      </div>
+                        <tr v-for="hooker in hooker_list" :key="hooker.url">
+                        <td><img :src="hooker.avatar"><br>{{ hooker.title }}</td>
+                        <td><a :href="hooker.url" target="_blank">{{ hooker.url }}</a></td>
+                        <td>{{ hooker.content }}</td>
+                        </tr>
                     </tbody>
                 </table>
+                <!-- table -->
                 <br>
                 <span style="color:darkred">!!!!有打關鍵字不要按前後，只能按數字</span>
                 <br>
-                <div class="row">
+                <form >
+                    <div class="form-group">
+                        <label for="exampleFormControlSelect1">Example select</label>
+                        <select class="form-control" id="exampleFormControlSelect1">
+                          <option>1</option>
+                          <option>2</option>
+                          <option>3</option>
+                          <option>4</option>
+                          <option>5</option>
+                        </select>
+                      </div>                    
+                </form>
+                <!-- <div class="row">
                     <div class="col-md-10">
                         <nav aria-label="Page navigation">
                             <ul class="pagination">
@@ -106,51 +114,75 @@
                             </ul>
                         </nav>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
 
-        <div id='99999999'
-        v-for="site in info"
-      >
-        {{ site.title }}
-      </div>
+        
+      <button @click = "getByPage(0)">1</button>
     </div>
     <script>
         var vm = new Vue({
             el:'#app',
             data:{
-                info:null
+                hooker_list:null,
+                totalpage:null,
             },
-            created:function(){
-                axios
-                .get('./data.json')
-                .then(
-                    response => (
-                        this.info = response.data,
-                        (()=>{
-                            alert('aaaa')
-                        })()
-                    ),
-                    
-                )
-                .catch(function (error) {
-                    console.log(error);
-                });
+            mounted:function(){
+                jkftotalpage = localStorage.getItem("jkftotalpage");
+                if(!jkftotalpage){
+                    axios
+                    .get('./data.json')
+                    .then(
+                        response => (                          
+                            localStorage.setItem("jkftotalpage",Object.keys(response.data).length),
+                            jkftotalpage = localStorage.getItem("jkftotalpage")
+                        ),
+                    )
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+                }
+                this.totalpage = jkftotalpage
+                this.getByPage(0)
             },
             methods:{
-                loadJson:function(){
-                    var id = 1
-                    this.info.forEach(object => {
-                        if(object.title.includes('line')||object.title.includes('Line')||object.title.includes('LINE')){
-                            return;
-                        }else{
-                            object.id = id;
-                            id++;
-                            localStorage.setItem(id,JSON.stringify(object))
-                        }
-                    });
+                // loadJson:function(){
+                //     var id = 1
+                //     this.info.forEach(object => {
+                //         if(object.title.includes('line')||object.title.includes('Line')||object.title.includes('LINE')){
+                //             return;
+                //         }else{
+                //             object.id = id;
+                //             id++;
+                //             localStorage.setItem(id,JSON.stringify(object))
+                //         }
+                //     });
+                // },
+                getByPage:function(page) {
+                    var index = "page"+page;
+                    var page = localStorage.getItem(index);
+                    if(!page){
+                        //async
+                        axios
+                        .get('./data.json')
+                        .then(
+                            response => (
+                                localStorage.setItem(index,JSON.stringify(response.data[index])),
+                                this.hooker_list = response.data[index]
+                            ),
+                        )
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                    }else{
+                        this.hooker_list = JSON.parse(page)
+                    }
+                    
                 },
+                clearLocalStorage:function() {
+                    localStorage.clear();
+                }
             }
         });
     </script>
