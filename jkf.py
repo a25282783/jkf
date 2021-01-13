@@ -43,7 +43,7 @@ if 'main1' in sys.argv or len(sys.argv)==1:
     cursor.execute("drop table if exists jkf;")
     cursor.execute("CREATE TABLE jkf ( id int(10) unsigned NOT NULL AUTO_INCREMENT, url varchar(255) DEFAULT NULL, title varchar(255) DEFAULT NULL, content text DEFAULT NULL, avatar varchar(255) DEFAULT NULL, PRIMARY KEY (id), UNIQUE KEY url (url) ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4")
     conn.commit()
-    for i in range(1):
+    for i in range(5):
         page = i+1
         url = "https://www.jkforum.net/type-1128-1476.html?forumdisplay&typeid=1476&orderby=dateline&dateline=2592000&filter=dateline&typeid=1476&forumdisplay=&orderby=dateline&dateline=2592000&page=%d" % (page)
         resp = requests.get(url)
@@ -80,7 +80,7 @@ if 'main1' in sys.argv or len(sys.argv)==1:
 # 爬文章
 if 'main2' in sys.argv or len(sys.argv)==1:
     print('爬內容開始...')
-    cursor.execute("select `url`,`avatar` from jkf  order by id limit 11")
+    cursor.execute("select `url`,`avatar` from jkf  order by id ")
     allRes = cursor.fetchall()
     sql = 'INSERT INTO `jkf` (`url`,`title`,`content`) VALUES (%s,%s,%s) ON DUPLICATE KEY UPDATE url=VALUES(url),title=VALUES(title),content=VALUES(content)'
     args = []
@@ -88,7 +88,7 @@ if 'main2' in sys.argv or len(sys.argv)==1:
     # print(allRes)
     # exit(0)
     j = 0 
-    show = 10
+    show = 20
     for i in allRes:
         url = i[0]
         avatar = i[1]
@@ -99,6 +99,9 @@ if 'main2' in sys.argv or len(sys.argv)==1:
                 # success
                 title = soup.find('h1').get_text()
                 content = soup.find_all('table',class_="view-data",limit=1)[0].get_text(strip=True)
+                #排除line
+                if "line" in content or "Line" in content or "柔柔" in content :
+                    continue
                 args.append((url,title,content))
                 print("%s完成..." % (url))
                 #json
