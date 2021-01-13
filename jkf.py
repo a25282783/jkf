@@ -43,7 +43,7 @@ if 'main1' in sys.argv or len(sys.argv)==1:
     cursor.execute("drop table if exists jkf;")
     cursor.execute("CREATE TABLE jkf ( id int(10) unsigned NOT NULL AUTO_INCREMENT, url varchar(255) DEFAULT NULL, title varchar(255) DEFAULT NULL, content text DEFAULT NULL, avatar varchar(255) DEFAULT NULL, PRIMARY KEY (id), UNIQUE KEY url (url) ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4")
     conn.commit()
-    for i in range(5):
+    for i in range(7):
         page = i+1
         url = "https://www.jkforum.net/type-1128-1476.html?forumdisplay&typeid=1476&orderby=dateline&dateline=2592000&filter=dateline&typeid=1476&forumdisplay=&orderby=dateline&dateline=2592000&page=%d" % (page)
         resp = requests.get(url)
@@ -100,13 +100,13 @@ if 'main2' in sys.argv or len(sys.argv)==1:
                 title = soup.find('h1').get_text()
                 content = soup.find_all('table',class_="view-data",limit=1)[0].get_text(strip=True)
                 #排除line
-                if "line" in content or "Line" in content or "柔柔" in content :
+                if "line" in content or "Line" in content or "LINE" in content :
                     continue
                 args.append((url,title,content))
                 print("%s完成..." % (url))
                 #json
                 pageIndex = "page"+str(math.floor(j/show))
-                if(j%10 == 0):
+                if(j%show == 0):
                     json_data[pageIndex] = []
                 json_data[pageIndex].append({
                     'url':url,

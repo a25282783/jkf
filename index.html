@@ -45,13 +45,14 @@
                 </div>
             </div>
         </div>
-        <button @click="clearLocalStorage()">清除緩存</button>
+        <button @click="clearLocalStorage()">清除緩存(如有更新)</button>
         <button @click="clearKeyWord()">清除關鍵字</button>
         <br>
         <form >
             <div class="form-group">
                 <label for="keyWord">關鍵字</label>
-                <input type="text" class="form-control" id="keyWord" placeholder="吹...刪除可全搜" name="keyWord" v-model="key" value="{{ key }}">
+                <label >v1.1已排除line,區分大小寫</label>
+                <input type="text" class="form-control" id="keyWord" placeholder="吹..." name="keyWord" v-model="key" value="{{ key }}">
             </div>
         </form>
         <button @click="getByPage(0)">走起</button>
@@ -138,17 +139,17 @@
                     }
                     setTimeout(()=>{
                         this.totalpage = jkftotalpage.split(',')
-                    },1000)
+                    },1500)
                 },
                 getByPage:function(page,move=null) {
                     page = parseInt(page)
-                    if(page<0){
-                        page=0
-                    }
                     if(move=='prev'){
                         page-=1
                     }else if(move=='next'){
                         page+=1
+                    }
+                    if(page<0){
+                        page=0
                     }
                     var index = "page"+page;
                     var obj = localStorage.getItem(index);
