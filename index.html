@@ -51,7 +51,6 @@
         <form >
             <div class="form-group">
                 <label for="keyWord">關鍵字</label>
-                <label >v1.1已排除line,區分大小寫</label>
                 <input type="text" class="form-control" id="keyWord" placeholder="吹..." name="keyWord" v-model="key" value="{{ key }}">
             </div>
         </form>
@@ -99,6 +98,13 @@
                     <button @click="getByPage(selected,'prev')" >上一頁</button>
                     <button @click="getByPage(selected)" >走起</button>
                     <button @click="getByPage(selected,'next')" >下一頁</button>
+                    <hr>
+                    <button @click="showRecord(1)">紀錄</button>  
+                    <div @click="showRecord(0)">
+                        <ul v-show="record">
+                            <li>大小寫沒差</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -114,7 +120,8 @@
                 selected: '',
                 has_keyWord:false,
                 loading:false,
-                key:''
+                key:'',
+                record:false
             },
             mounted:function(){
                 this.getTotalPage();
@@ -136,12 +143,13 @@
                         .catch(function (error) {
                             console.log(error);
                         });
-                    }
-                    setTimeout(()=>{
+                    }else{
                         this.totalpage = jkftotalpage.split(',')
-                    },1500)
+                    }
+                    
                 },
                 getByPage:function(page,move=null) {
+                    this.loading = true
                     page = parseInt(page)
                     if(move=='prev'){
                         page-=1
@@ -172,42 +180,34 @@
                     }
                     this.nowpage = page
                     this.selected = page
-                    window.scrollTo(0,0)
-                    
+                    this.loading = false
+                    window.scrollTo(0,0)                   
                 },
                 filterByKeyWord:function(obj) {
                     if(this.key!==''){
                         let key = this.key
+                        let regObj = new RegExp(key, "i");
                         var obj = obj.filter(function(item, index, array){
-                            return item.content.includes(key); 
+                            return regObj.test(item.content)
                         })
                     }
                     return obj
                     
                 },
-                // parse:function(obj) {
-                //     var arr = Object.keys(obj)
-                //     // console.log(arr)
-                //     arr.forEach(index => {
-                //         if(!localStorage.getItem(index)){
-                //             localStorage.setItem(index,JSON.stringify(obj[index])); 
-                //         }
-                //         console.log(obj[index]);
-                //         for()
-                        
-                //     });
-                //     // close mask
-                //     this.loading = false
-                // },
                 clearKeyWord:function() {
                     this.has_keyWord=false
                     this.key=''
                     this.getByPage(0);
+                    alert('完成')
                 },
                 clearLocalStorage:function() {
                     localStorage.clear();
                     this.getTotalPage();
                     this.getByPage(0)
+                    alert('完成')
+                },
+                showRecord:function(type) {
+                    this.record = (type==1)?true:false
                 }
             }
         });
