@@ -169,7 +169,12 @@
                         .then(
                             response => (
                                 localStorage.setItem(index,JSON.stringify(response.data[index])),
-                                this.hooker_list = this.filterByKeyWord(response.data[index])
+                                this.hooker_list = this.filterByKeyWord(response.data[index]),
+                                this.nowpage = page,
+                                this.selected = page,
+                                this.loading = false,
+                                window.scrollTo(0,0), 
+                                console.log('done')
                             ),
                         )
                         .catch(function (error) {
@@ -178,11 +183,14 @@
                     }else{
                         this.hooker_list = this.filterByKeyWord(JSON.parse(obj))
                     }
-                    this.nowpage = page
-                    this.selected = page
-                    this.loading = false
-                    window.scrollTo(0,0)                   
+                    this.$nextTick(function () {
+                        this.nowpage = page
+                        this.selected = page
+                        this.loading = false
+                        window.scrollTo(0,0)  
+                    });           
                 },
+                
                 filterByKeyWord:function(obj) {
                     if(this.key!==''){
                         let key = this.key
