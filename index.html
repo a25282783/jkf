@@ -167,15 +167,15 @@
                         axios
                         .get('./data.json')
                         .then(
-                            response => (
-                                localStorage.setItem(index,JSON.stringify(response.data[index])),
-                                this.hooker_list = this.filterByKeyWord(response.data[index]),
-                                this.nowpage = page,
-                                this.selected = page,
-                                this.loading = false,
-                                window.scrollTo(0,0), 
+                            response => {
+                                localStorage.setItem(index,JSON.stringify(response.data[index]))
+                                this.hooker_list = this.filterByKeyWord(response.data[index])
+                                this.nowpage = page
+                                this.selected = page
+                                this.loading = false
+                                window.scrollTo(0,0)
                                 console.log('done')
-                            ),
+                            },
                         )
                         .catch(function (error) {
                             console.log(error);
