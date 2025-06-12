@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Popup Vui Nhộn</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    .popup-bg {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      width: 100vw;
+      z-index: 10;
+    }
+    .popup {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+      padding: 24px 16px 80px 16px;
+      max-width: 96vw;
+      width: 350px;
+      text-align: center;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 220px;
+      box-sizing: border-box;
+    }
+    .popup-text {
+      font-size: 1.18rem;
+      margin-bottom: 24px;
+      color: #222;
+      min-height: 2.5em;
+      transition: color 0.2s;
+      width: 100%;
+      word-break: break-word;
+      line-height: 1.5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .popup-btn {
+      padding: 14px 28px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 8px;
+      background: #ffb300;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.2s, left 0.2s, top 0.2s;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 24px;
+      min-width: 120px;
+      min-height: 48px;
+      user-select: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    @media (max-width: 500px) {
+      .popup {
+        width: 80vw;
+        min-width: 0;
+        padding: 18px 8px 60px 8px;
+      }
+      .popup-btn {
+        min-width: 90px;
+        font-size: 1rem;
+        bottom: 12px;
+      }
+      .popup-text {
+        font-size: 1.05rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="popup-bg">
+    <div class="popup" id="popup">
+      <div class="popup-text" id="popupText">
+        Nếu tôi vẫn còn giận chồng, hãy nhấn vào tôi
+      </div>
+      <div class="popup-emoji" style="font-size:2.2rem; margin-bottom:12px; text-align:center;">🤪</div>
+      <button class="popup-btn" id="popupBtn">
+        Nếu tôi vẫn còn giận chồng, hãy nhấn vào tôi
+      </button>
+    </div>
+  </div>
+  <script>
+    // 越南文文本
+    const text1 = "Nếu tôi vẫn còn giận chồng, hãy nhấn vào tôi";
+    const text2 = "Chồng không hiểu";
+    const btn1 = "Nếu tôi vẫn còn giận chồng, hãy nhấn vào tôi";
+    const btn2 = "Đánh tôi đi";
+
+    const popupText = document.getElementById('popupText');
+    const popupBtn = document.getElementById('popupBtn');
+    const popup = document.getElementById('popup');
+
+    let changed = false;
+
+    popupBtn.addEventListener('click', function() {
+      if (!changed) {
+        popupText.textContent = text2;
+        popupBtn.textContent = btn2;
+        changed = true;
+      } else {
+        // 點擊時也隨機移動 popup
+        const padding = 10;
+        const winW = window.innerWidth;
+        const winH = window.innerHeight;
+        const popupW = popup.offsetWidth;
+        const popupH = popup.offsetHeight;
+        const maxLeft = winW - popupW - padding;
+        const maxTop = winH - popupH - padding;
+        const left = Math.random() * maxLeft + padding / 2;
+        const top = Math.random() * maxTop + padding / 2;
+        popup.style.position = 'fixed';
+        popup.style.left = left + 'px';
+        popup.style.top = top + 'px';
+        popup.style.margin = '0';
+        popup.style.transform = '';
+      }
+    });
+
+    popupBtn.addEventListener('mouseenter', function(e) {
+      if (changed) {
+        // 取得視窗與 popup 尺寸
+        const padding = 10;
+        const winW = window.innerWidth;
+        const winH = window.innerHeight;
+        const popupW = popup.offsetWidth;
+        const popupH = popup.offsetHeight;
+
+        // 計算可移動範圍
+        const maxLeft = winW - popupW - padding;
+        const maxTop = winH - popupH - padding;
+
+        // 隨機新位置
+        const left = Math.random() * maxLeft + padding / 2;
+        const top = Math.random() * maxTop + padding / 2;
+
+        popup.style.position = 'fixed';
+        popup.style.left = left + 'px';
+        popup.style.top = top + 'px';
+        popup.style.margin = '0';
+        popup.style.transform = '';
+      }
+    });
+
+    // 初始位置重設
+    popupBtn.addEventListener('mouseleave', function() {
+      if (!changed) {
+        popupBtn.style.left = '50%';
+        popupBtn.style.top = '';
+        popupBtn.style.transform = 'translateX(-50%)';
+      }
+      if (changed) {
+        // popup 保持在最後一次隨機位置
+      }
+    });
+  </script>
+</body>
+</html>
